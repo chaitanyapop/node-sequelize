@@ -5,15 +5,20 @@ require("./model/userModel");
 
 const { router } = require("./routes/userRoutes");
 const app = express();
-
+app.use(express.json());
 app.use("/", router);
+app.use((err, req, res, next) => {
+  res
+    .status(err.status || 500)
+    .json({ message: err.message || "Server error" });
+});
 
 app.listen(process.env.PORT_STAGE, async () => {
   console.log("app is running at", process.env.PORT_STAGE);
   try {
     await sequelize.authenticate();
     if (process.env.NODE_ENV == "stage") {
-      await sequelize.sync({ force: true });
+      await sequelize.sync({ alter: true });
     }
     console.log("db connected successfully");
   } catch (error) {
