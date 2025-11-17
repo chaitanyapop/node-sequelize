@@ -12,11 +12,29 @@ const user = sequelize.define(
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(value) {
+        this.setDataValue("firstName") + "From India";
+      }, // here value means in post/put/patch request when we send any data for the firstName e.g Chaitanya then this name will come here as a value and "from india" will get added at the end and stored in DB
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: true,
+      get() {
+        const lastNameValue = this.getDataValue("lastName");
+        return lastNameValue ? lastNameValue.toUpperCase() : "No last name";
+      },
     },
+    fullName: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const fullName =
+          this.getDataValue("firstName") + " " + this.getDataValue("lastName");
+        return fullName;
+      },
+      set(value) {
+        throw new Error("Value cannot be set for the virtual fields");
+      },
+    }, // this is the virtual field and this will not be having any impact on DB. It is just for the FE and BE purpose no intentions to change DB
   },
   {
     //freezeTableName: true, //means the model name and the table name will be same
