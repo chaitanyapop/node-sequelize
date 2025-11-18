@@ -1,11 +1,19 @@
 const { user } = require("../model/userModel");
+const { sequelize } = require("../config/dbConnection");
+const { QueryTypes } = require("sequelize");
 
 /*res.status(200).json({ message: "user added successfully" }); only this will also sends the response but we use return because it
 officially tells the function execution is completed and it stops the execution */
 
 async function getAllUser(req, res, next) {
   try {
-    const allUser = await user.findAll();
+    //const allUser = await user.findAll();
+    const allUser = await sequelize.query("SELECT * FROM users", {
+      type: QueryTypes.SELECT,
+      mapToModel: true,
+    }); /*This is how we can write raw queries in sequelize. We have to mention type:QueryTypes.SELECT if we dont do it then it returns meta data as well and we need to destructure
+    Getter, Setter, Virtuals will not work for the raw query */
+    console.log(allUser);
     res.status(200).json(allUser);
   } catch (err) {
     next(err);
@@ -15,9 +23,17 @@ async function getAllUser(req, res, next) {
 async function getUser(req, res, next) {
   console.log("executing", req.body);
   try {
-    const users = await user.findAll({
-      where: { firstName: req.body.firstName },
-    });
+    // const users = await user.findAll({
+    //   where: { firstName: req.body.firstName },
+    // });
+    const users = await sequelize.query(
+      `SELECT * FROM users WHERE firstName = :firstName`,
+      {
+        type: QueryTypes.SELECT,
+        replacements: { firstName: req.body.firstName }, // this is how we pass the value to the where clause. In this example "firstName"
+      }
+    );
+    console.log(users);
     if (!users) {
       res.status(404).json({ message: "not found" });
     } else {
@@ -90,8 +106,8 @@ module.exports = {
   deleteUser,
 };
 
-// router.get("/getAllUser");
-// router.get("/getOneUser");
-// router.post("/addUser", insertUser);
-// router.patch("/updateUser");
-// router.delete("/deleteUser");
+// const users = await sequelize.query(
+//       `SELECT * FROM users WHERE firstName = ${req.body.firstName}`
+//     );
+/*This is totally an incorrect plus dangerous way to get data from request parameter as it is vulnerable to 
+SQL injection attack where FE can send firstName = "";"DROP TABLE users" therfore use replacements to add data or use ORM methods*/
