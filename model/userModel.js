@@ -11,9 +11,9 @@ const user = sequelize.define(
     },
     firstName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false, //constraint
       set(value) {
-        this.setDataValue("firstName") + "From India";
+        this.setDataValue("firstName", value + "From India");
       }, // here value means in post/put/patch request when we send any data for the firstName e.g Chaitanya then this name will come here as a value and "from india" will get added at the end and stored in DB
     },
     lastName: {
@@ -22,7 +22,26 @@ const user = sequelize.define(
       get() {
         const lastNameValue = this.getDataValue("lastName");
         return lastNameValue ? lastNameValue.toUpperCase() : "No last name";
-      },
+      }, // This is used when we get some data from DB and before sending it to the FE we want to do some modifications then we can do it here
+    },
+    age: {
+      type: DataTypes.INTEGER,
+      allowNull: false, //constraint
+      validate: {
+        min: 18,
+        max: 80,
+      }, // this is how we can add multiple validators before sending data into database
+    },
+    salary: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: {
+        isPositive(value) {
+          if (value < 0) {
+            throw new Error("Invalid salary");
+          }
+        },
+      }, // this is how we can create custom validator before sending data into DB
     },
     fullName: {
       type: DataTypes.VIRTUAL,
@@ -40,7 +59,21 @@ const user = sequelize.define(
     //freezeTableName: true, //means the model name and the table name will be same
     tableName: "users", // use this table name for model User
     timestamps: false, // when it creates table it adds two extra column createdAt and updatedAt to not to have them we have to mention this and if we want only one of them then also we can do it refer doc
+    validate: {
+      checkLastNameAndSalary() {
+        if (!this.lastName && !this.salary) {
+          throw new Error("Either salary or lastname should be present");
+        }
+      }, // here we put validators which work on whole model
+    },
   }
 );
 /*sequelize.define returns a model. The same model is stored inside the sequelize.models.User(stored in sequelize object) == user */
 module.exports = { user };
+
+/**......Validators and constraints...
+ *
+ * Validators are used before sending data into DB we want to do some checks.
+ *
+ * constraints are used to maintain the data intigrity
+ */
