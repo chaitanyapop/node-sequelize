@@ -1,12 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const { sequelize } = require("./config/dbConnection");
-require("./model/userModel");
+require("./association");
 
 const { router } = require("./routes/userRoutes");
+const { profileRouter } = require("./routes/profileRoutes");
 const app = express();
 app.use(express.json());
 app.use("/", router);
+app.use("/profile", profileRouter);
 app.use((err, req, res, next) => {
   res
     .status(err.status || 500)

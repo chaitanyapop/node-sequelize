@@ -1,19 +1,37 @@
 const { user } = require("../model/userModel");
 const { sequelize } = require("../config/dbConnection");
 const { QueryTypes } = require("sequelize");
+const { ProfileModel } = require("../model/profileModel");
 
 /*res.status(200).json({ message: "user added successfully" }); only this will also sends the response but we use return because it
 officially tells the function execution is completed and it stops the execution */
 
 async function getAllUser(req, res, next) {
   try {
-    //const allUser = await user.findAll();
-    const allUser = await sequelize.query("SELECT * FROM users", {
-      type: QueryTypes.SELECT,
-      mapToModel: true,
-    }); /*This is how we can write raw queries in sequelize. We have to mention type:QueryTypes.SELECT if we dont do it then it returns meta data as well and we need to destructure
-    Getter, Setter, Virtuals will not work for the raw query */
-    console.log(allUser);
+    const allUser = await user.findAll({
+      include: {
+        model: ProfileModel,
+      } /*here we are saying when you send info about all the users include profile information as well about that user 
+      where we did FK referencial integrity. profile will be another key in the repsonse of a particular user which will hold the dataa of the profile
+      e.g - > 
+      {
+      "lastName": "P",
+        "fullName": "chaitanyaFrom India P",
+        "id": 2,
+        "firstName": "chaitanyaFrom India",
+        "age": 25,
+        "salary": null,
+        "profile": {
+            "id": 1,
+            "bio": "This is chaitanya's bio",
+            "userId": 2
+        }} */,
+    });
+    // const allUser = await sequelize.query("SELECT * FROM users", {
+    //   type: QueryTypes.SELECT,
+    //   mapToModel: true,
+    // }); /*This is how we can write raw queries in sequelize. We have to mention type:QueryTypes.SELECT if we dont do it then it returns meta data as well and we need to destructure
+    //Getter, Setter, Virtuals will not work for the raw query */
     res.status(200).json(allUser);
   } catch (err) {
     next(err);
@@ -33,7 +51,6 @@ async function getUser(req, res, next) {
         replacements: { firstName: req.body.firstName }, // this is how we pass the value to the where clause. In this example "firstName"
       }
     );
-    console.log(users);
     if (!users) {
       res.status(404).json({ message: "not found" });
     } else {
