@@ -1,24 +1,21 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/dbConnection");
 
-const ProfileModel = sequelize.define(
-  "profile",
+const BlogsModel = sequelize.define(
+  "user_blogs",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    bio: {
+    blogs: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true, // this means 1:1 association. For every one userId there will be only one user profile.
-      /*If we dont do this then we can create multiple profiles for single user. The hasOne does only LIMIT 1 it does not check 
-      one userID has only one profile that we have to do it by adding constraints like unique */
     }, // this is the FK means it has link to the userModel or user table
   },
   {
@@ -26,4 +23,4 @@ const ProfileModel = sequelize.define(
     timestamps: false,
   }
 );
-module.exports = { ProfileModel };
+module.exports = { BlogsModel };

@@ -5,10 +5,12 @@ require("./association");
 
 const { router } = require("./routes/userRoutes");
 const { profileRouter } = require("./routes/profileRoutes");
+const { blogRouter } = require("./routes/blogRoutes");
 const app = express();
 app.use(express.json());
 app.use("/", router);
 app.use("/profile", profileRouter);
+app.use("/blog", blogRouter);
 app.use((err, req, res, next) => {
   res
     .status(err.status || 500)

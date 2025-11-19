@@ -1,5 +1,4 @@
 const { ProfileModel } = require("../model/profileModel");
-const { sequelize } = require("../config/dbConnection");
 
 async function addProfile(req, res, next) {
   try {

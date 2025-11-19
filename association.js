@@ -1,13 +1,21 @@
 /*This file is mainly used to created the association within models */
 const { user } = require("./model/userModel");
 const { ProfileModel } = require("./model/profileModel");
-
+const { BlogsModel } = require("./model/blogsModel");
 user.hasOne(ProfileModel, {
   foreignKey: "userId",
 });
 ProfileModel.belongsTo(user, {
   foreignKey: "userId",
 });
+
+user.hasMany(BlogsModel, {
+  foreignKey: "userId",
+});
+BlogsModel.belongsTo(user, {
+  foreignKey: "userId",
+});
+
 /**NOTES...
  * user.hasOne(ProfileModel, {
   foreignKey: "userId",

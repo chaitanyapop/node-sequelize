@@ -2,6 +2,7 @@ const { user } = require("../model/userModel");
 const { sequelize } = require("../config/dbConnection");
 const { QueryTypes } = require("sequelize");
 const { ProfileModel } = require("../model/profileModel");
+const { BlogsModel } = require("../model/blogsModel");
 
 /*res.status(200).json({ message: "user added successfully" }); only this will also sends the response but we use return because it
 officially tells the function execution is completed and it stops the execution */
@@ -9,9 +10,14 @@ officially tells the function execution is completed and it stops the execution 
 async function getAllUser(req, res, next) {
   try {
     const allUser = await user.findAll({
-      include: {
-        model: ProfileModel,
-      } /*here we are saying when you send info about all the users include profile information as well about that user 
+      include: [
+        {
+          model: ProfileModel,
+        },
+        {
+          model: BlogsModel,
+        },
+      ] /*here we are saying when you send info about all the users include profile information as well about that user 
       where we did FK referencial integrity. profile will be another key in the repsonse of a particular user which will hold the dataa of the profile
       e.g - > 
       {
