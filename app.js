@@ -6,11 +6,15 @@ require("./association");
 const { router } = require("./routes/userRoutes");
 const { profileRouter } = require("./routes/profileRoutes");
 const { blogRouter } = require("./routes/blogRoutes");
+const { studentRouter } = require("./routes/studentRoute");
+const { courseRouter } = require("./routes/courseRoute");
 const app = express();
 app.use(express.json());
 app.use("/", router);
 app.use("/profile", profileRouter);
 app.use("/blog", blogRouter);
+app.use("/student", studentRouter);
+app.use("/course", courseRouter);
 app.use((err, req, res, next) => {
   res
     .status(err.status || 500)

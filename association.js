@@ -2,6 +2,8 @@
 const { user } = require("./model/userModel");
 const { ProfileModel } = require("./model/profileModel");
 const { BlogsModel } = require("./model/blogsModel");
+const { StudentModel } = require("./model/studentModel");
+const { CourseModel } = require("./model/courseModel");
 user.hasOne(ProfileModel, {
   foreignKey: "userId",
 });
@@ -10,12 +12,20 @@ ProfileModel.belongsTo(user, {
 });
 
 user.hasMany(BlogsModel, {
-  foreignKey: "userId",
+  foreignKey: "userId", // this means child table will be having userId column which refers to the parents PK
 });
 BlogsModel.belongsTo(user, {
-  foreignKey: "userId",
+  foreignKey: "userId", // this means child table will be having userId column which refers to the parents PK
 });
 
+StudentModel.belongsToMany(CourseModel, {
+  through: "StudentCourse", // new table name created by sequelize,
+  foreignKey: "studentId", // new table foreign key
+});
+CourseModel.belongsToMany(StudentModel, {
+  through: "StudentCourse", // new table name created by sequelize,
+  foreignKey: "courseId", // new table foreign key
+});
 /**NOTES...
  * user.hasOne(ProfileModel, {
   foreignKey: "userId",
